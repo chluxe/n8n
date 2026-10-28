@@ -1,0 +1,305 @@
+{
+  "name": "e-Com Generator (Baserow-ready core)",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        200
+      ],
+      "id": "b7b2c503-4dfc-4a4c-92f6-d7c91ce5a5c1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c2d3fc15-851e-421a-9b36-5b0b93ed9c21",
+              "name": "Détail",
+              "value": "Prompt généré pour le modèle",
+              "type": "string"
+            },
+            {
+              "id": "f14f9297-0db1-4c77-a5de-9223bc2a16e5",
+              "name": "LLM",
+              "value": "Flux.1 Kontext Pro",
+              "type": "string"
+            },
+            {
+              "id": "c82c9f87-5b21-4ca3-a292-508b1f729e30",
+              "name": "Photo",
+              "value": "=[\n  {\n    \"url\": \"https://files.example.com/modele.png\"\n  }\n]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        200
+      ],
+      "id": "a9dfd436-bfb6-4b81-8760-7fa599ca57e0",
+      "name": "Préparer ligne Modèle"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": "={{ $env.BASEROW_DATABASE_ID }}",
+        "tableId": "={{ $env.BASEROW_MODEL_TABLE_ID }}",
+        "dataToSend": "autoMapInputData",
+        "inputsToIgnore": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        320,
+        200
+      ],
+      "id": "8a2a53c0-8c0f-4f86-9a76-bc70edb2db15",
+      "name": "Baserow > Create Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f21c6ffa-2bd7-44c7-83f9-9e5ab19b1abf",
+              "name": "activeFieldId",
+              "value": "={{ $env.BASEROW_MODEL_ACTIVE_FIELD_ID }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        200
+      ],
+      "id": "6a7ba0a0-1d8d-4d92-b1cc-3c5b9a8c32cb",
+      "name": "Configurer filtre Actif"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "databaseId": "={{ $env.BASEROW_DATABASE_ID }}",
+        "tableId": "={{ $env.BASEROW_MODEL_TABLE_ID }}",
+        "returnAll": false,
+        "limit": 1,
+        "additionalOptions": {
+          "filters": {
+            "fields": [
+              {
+                "field": "={{ 'field_' + $json.activeFieldId }}",
+                "operator": "equal",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        840,
+        200
+      ],
+      "id": "e164f4b9-3d49-43ed-99ee-0533dfeeb580",
+      "name": "Baserow > Search Active Model"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d29dd30-3300-4a0b-b311-2f3d5f3e5a0f",
+              "name": "Id",
+              "value": "Shooting-123",
+              "type": "string"
+            },
+            {
+              "id": "9b19c3a2-74c9-4902-99f6-d0b2dccbfa1d",
+              "name": "Photos Produits",
+              "value": "=[\n  {\"url\": \"https://files.example.com/haut.png\"},\n  {\"url\": \"https://files.example.com/bas.png\"},\n  {\"url\": \"https://files.example.com/chaussures.png\"}\n]",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "includeOtherFields": false
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        40,
+        520
+      ],
+      "id": "5b0f98d8-2c4c-4bfa-ab93-7ac788ae2a69",
+      "name": "Préparer ligne Shooting"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": "={{ $env.BASEROW_DATABASE_ID }}",
+        "tableId": "={{ $env.BASEROW_SHOOTING_TABLE_ID }}",
+        "dataToSend": "autoMapInputData",
+        "inputsToIgnore": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        320,
+        520
+      ],
+      "id": "e04c999b-d2d5-4ebb-9258-64bcd0447900",
+      "name": "Baserow > Create Shooting"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "databaseId": "={{ $env.BASEROW_DATABASE_ID }}",
+        "tableId": "={{ $env.BASEROW_SHOOTING_TABLE_ID }}",
+        "rowId": "={{ $('Baserow > Create Shooting').item.json.id }}",
+        "dataToSend": "autoMapInputData",
+        "inputsToIgnore": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        560,
+        520
+      ],
+      "id": "b535ec2e-3e65-42ff-82b3-58e42c2e63c7",
+      "name": "Baserow > Update Shooting"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "databaseId": "={{ $env.BASEROW_DATABASE_ID }}",
+        "tableId": "={{ $env.BASEROW_SHOOTING_TABLE_ID }}",
+        "rowId": "={{ $('Baserow > Create Shooting').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        840,
+        520
+      ],
+      "id": "420c69d3-1198-45e0-a18c-4d1bc83d0f5f",
+      "name": "Baserow > Get Shooting"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Préparer ligne Modèle",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Préparer ligne Shooting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer ligne Modèle": {
+      "main": [
+        [
+          {
+            "node": "Baserow > Create Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow > Create Model": {
+      "main": [
+        [
+          {
+            "node": "Configurer filtre Actif",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configurer filtre Actif": {
+      "main": [
+        [
+          {
+            "node": "Baserow > Search Active Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparer ligne Shooting": {
+      "main": [
+        [
+          {
+            "node": "Baserow > Create Shooting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow > Create Shooting": {
+      "main": [
+        [
+          {
+            "node": "Baserow > Update Shooting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow > Update Shooting": {
+      "main": [
+        [
+          {
+            "node": "Baserow > Get Shooting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "d23a5676-b761-4fd7-8f67-6c10d2e358c1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "BaserowEComGenerator",
+  "tags": [
+    "baserow",
+    "e-com"
+  ]
+}
